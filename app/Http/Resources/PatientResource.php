@@ -13,25 +13,47 @@ final class PatientResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'medical_record_number' => $this->medical_record_number,
-            'date_of_birth' => $this->date_of_birth?->toDateString(),
-            'gender' => $this->gender?->value,
-            'emergency_contact_name' => $this->emergency_contact_name,
-            'emergency_contact_phone' => $this->emergency_contact_phone,
-            'address' => $this->address,
-            'notes' => $this->notes,
+            'user_id' => $this->user_id,
 
-            'user' => new UserResource(
-                $this->whenLoaded('user')
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'full_name' => $this->fullName(),
+
+            'national_code' => $this->national_code,
+            'birth_date' => $this->birth_date?->toDateString(),
+            'gender' => $this->gender?->value,
+            'gender_label' => $this->gender?->label(),
+
+            'phone' => $this->phone,
+            'address' => $this->address,
+
+            'emergency_contact' => [
+                'name' => $this->emergency_contact_name,
+                'phone' => $this->emergency_contact_phone,
+                'relation' => $this->emergency_contact_relation,
+            ],
+
+            'status' => $this->status?->value,
+            'status_label' => $this->status?->label(),
+
+            'chronic_diseases' => ChronicDiseaseResource::collection(
+                $this->whenLoaded('chronicDiseases')
             ),
 
-            'doctors' => DoctorResource::collection(
+            'health_records' => HealthRecordResource::collection(
+                $this->whenLoaded('healthRecords')
+            ),
+
+            'doctors' => UserResource::collection(
                 $this->whenLoaded('doctors')
             ),
 
-            'caregivers' => CaregiverResource::collection(
+            'caregivers' => UserResource::collection(
                 $this->whenLoaded('caregivers')
             ),
+
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

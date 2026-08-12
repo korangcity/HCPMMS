@@ -11,60 +11,80 @@ final class PatientPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->can('patients.view');
+        return $user->hasAnyRole([
+            'admin',
+            'doctor',
+            'caregiver',
+        ]);
     }
 
     public function view(User $user, Patient $patient): bool
     {
-        if ($user->can('patients.view')) {
+        if ($user->hasRole('admin')) {
             return true;
         }
 
-        if ($user->patient?->is($patient)) {
+        if ($patient->user_id === $user->id) {
             return true;
         }
 
-        if (
-            $user->doctor !== null &&
-            $user->doctor->patients()
-                ->whereKey($patient->id)
-                ->exists()
-        ) {
+        if ($patient->doctors()
+            ->whereKey($user->id)
+            ->exists()) {
             return true;
         }
 
-        return $user->caregiver !== null &&
-            $user->caregiver->patients()
-                ->whereKey($patient->id)
-                ->exists();
+        return $patient->caregivers()
+            ->whereKey($user->id)
+            ->exists();
     }
 
     public function create(User $user): bool
     {
-        return $user->can('patients.create');
+        return $user->hasAnyRole([
+            'admin',
+            'doctor',
+        ]);
     }
 
     public function update(User $user, Patient $patient): bool
     {
-        if ($user->can('patients.update')) {
+        if ($user->hasRole('admin')) {
             return true;
         }
 
-        return $user->patient?->is($patient) ?? false;
+        return $patient->user_id === $user->id
+            || $patient->doctors()->whereKey($user->id)->exists();
     }
 
     public function delete(User $user, Patient $patient): bool
     {
-        return $user->can('patients.delete');
+        return $user->hasRole('admin');
     }
 
-    public function assignDoctor(User $user, Patient $patient): bool
-    {
-        return $user->can('patients.assign-doctor');
+    public function manageMedicalRecords(
+        User $user,
+        Patient $patient,
+    ): bool {
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        return $patient->doctors()
+            ->whereKey($user->id)
+            ->exists();
     }
 
-    public function assignCaregiver(User $user, Patient $patient): bool
-    {
-        return $user->can('patients.assign-caregiver');
+    public function manageCaregivers(
+        User $user,
+        Patient $patient,
+    ): bool {
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        return $patient->doctors()
+            ->whereKey($user->id)
+            ->exists();
     }
 }

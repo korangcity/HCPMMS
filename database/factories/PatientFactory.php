@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\Gender;
+use App\Enums\PatientGender;
+use App\Enums\PatientStatus;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,16 +21,24 @@ final class PatientFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'medical_record_number' => 'MRN-' . fake()->unique()->numerify('######'),
-            'date_of_birth' => fake()->dateTimeBetween(
-                '-90 years',
-                '-18 years'
-            )->format('Y-m-d'),
-            'gender' => fake()->randomElement(Gender::cases()),
-            'emergency_contact_name' => fake()->name(),
-            'emergency_contact_phone' => fake()->numerify('09#########'),
+            'national_code' => fake()->unique()->numerify('##########'),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'birth_date' => fake()->dateTimeBetween('-80 years', '-18 years'),
+            'gender' => fake()->randomElement(PatientGender::cases()),
+            'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
-            'notes' => fake()->optional()->sentence(),
+            'emergency_contact_name' => fake()->name(),
+            'emergency_contact_phone' => fake()->phoneNumber(),
+            'emergency_contact_relation' => 'فرزند',
+            'status' => PatientStatus::Active,
         ];
+    }
+
+    public function inactive(): static
+    {
+        return $this->state([
+            'status' => PatientStatus::Inactive,
+        ]);
     }
 }

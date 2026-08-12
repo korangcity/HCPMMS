@@ -1,36 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use App\Enums\Gender;
+use App\Enums\PatientGender;
+use App\Enums\PatientStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Patient extends Model
+final class Patient extends Model
 {
-    /** @use HasFactory<\Database\Factories\PatientFactory> */
     use HasFactory,SoftDeletes;
 
     protected $fillable = [
         'user_id',
-        'medical_record_number',
-        'date_of_birth',
+        'national_code',
+        'first_name',
+        'last_name',
+        'birth_date',
         'gender',
+        'phone',
+        'address',
         'emergency_contact_name',
         'emergency_contact_phone',
-        'address',
-        'notes',
+        'emergency_contact_relation',
+        'status',
+        'created_by',
     ];
 
     protected function casts(): array
     {
         return [
-            'date_of_birth' => 'immutable_date',
-            'gender' => Gender::class,
+            'birth_date' => 'immutable_date',
+            'gender' => PatientGender::class,
+            'status' => PatientStatus::class,
         ];
     }
 
@@ -39,44 +48,60 @@ class Patient extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function chronicDiseases(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            ChronicDisease::class,
+            'patient_chronic_disease'
+        )->withPivot([
+            'diagnosed_at',
+            'notes',
+            'is_active',
+        ])->withTimestamps();
+    }
+
+    public function healthRecords(): HasMany
+    {
+        return $this->hasMany(HealthRecord::class);
+    }
+
     public function doctors(): BelongsToMany
     {
         return $this->belongsToMany(
-            Doctor::class,
-            'doctor_patient'
+            User::class,
+            'patient_doctor',
+            'patient_id',
+            'doctor_id'
         )->withPivot([
-            'assigned_at',
+            'status',
+            'started_at',
             'ended_at',
-            'is_primary',
+            'notes',
         ])->withTimestamps();
     }
 
     public function caregivers(): BelongsToMany
     {
         return $this->belongsToMany(
-            Caregiver::class,
-            'caregiver_patient'
+            User::class,
+            'patient_caregiver',
+            'patient_id',
+            'caregiver_id'
         )->withPivot([
-            'assigned_at',
+            'status',
+            'started_at',
             'ended_at',
-            'is_primary',
+            'notes',
         ])->withTimestamps();
     }
 
-    public function scopeWithRelations(Builder $query): Builder
+    public function scopeActive(Builder $query): Builder
     {
-        return $query->with([
-            'user',
-            'doctors.user',
-            'caregivers.user',
-        ]);
+        return $query->where('status', PatientStatus::Active);
     }
 
-    public function scopeActiveAssignments(Builder $query): Builder
+    public function fullName(): string
     {
-        return $query->whereHas('doctors', function (Builder $doctorQuery): void {
-            $doctorQuery->whereNull('doctor_patient.ended_at');
-        });
+        return trim("{$this->first_name} {$this->last_name}");
     }
-
 }
