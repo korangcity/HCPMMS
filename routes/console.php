@@ -10,3 +10,12 @@ Artisan::command('inspire', function () {
 
 Schedule::command('patients:deactivate-expired-relations')
     ->dailyAt('00:10');
+
+
+
+Schedule::command('medications:send-reminders')
+    ->everyMinute()
+    ->withoutOverlapping();
+
+
+

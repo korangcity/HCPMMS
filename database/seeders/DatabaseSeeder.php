@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ChronicDiseaseSeeder::class,
             HealthMonitoringSeeder::class,
+            MedicationSeeder::class,
         ]);
     }
 }
