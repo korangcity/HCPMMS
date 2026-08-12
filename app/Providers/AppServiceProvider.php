@@ -2,11 +2,20 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Password;
+use App\Models\Caregiver;
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Policies\CaregiverPolicy;
+use App\Policies\DoctorPolicy;
+use App\Policies\PatientPolicy;
+use App\Policies\UserPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +33,25 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+
+
+
+
+        Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Patient::class, PatientPolicy::class);
+        Gate::policy(Doctor::class, DoctorPolicy::class);
+        Gate::policy(Caregiver::class, CaregiverPolicy::class);
+
+        Gate::before(
+            static function (User $user, string $ability): ?bool {
+                return $user->hasRole('admin') ? true : null;
+            }
+        );
+
+
+
+
     }
 
     /**
