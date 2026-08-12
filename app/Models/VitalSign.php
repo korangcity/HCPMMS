@@ -4,31 +4,35 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\HealthRecordType;
+use App\Enums\VitalSignType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-final class HealthRecord extends Model
+final class VitalSign extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = [
         'patient_id',
         'recorded_by',
         'type',
-        'title',
-        'description',
-        'data',
+        'value',
+        'secondary_value',
+        'unit',
         'recorded_at',
+        'source',
+        'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            'type' => HealthRecordType::class,
-            'data' => 'array',
+            'type' => VitalSignType::class,
+            'value' => 'decimal:2',
+            'secondary_value' => 'decimal:2',
             'recorded_at' => 'immutable_datetime',
         ];
     }

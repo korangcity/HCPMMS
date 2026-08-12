@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('health_records', function (Blueprint $table): void {
+        Schema::create('vital_signs', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignId('patient_id')
@@ -24,15 +24,21 @@ return new class extends Migration
 
             $table->string('type', 50);
 
-            $table->string('title', 255);
-
-            $table->text('description')
+            $table->decimal('value', 10, 2)
                 ->nullable();
 
-            $table->json('data')
+            $table->decimal('secondary_value', 10, 2)
                 ->nullable();
+
+            $table->string('unit', 30);
 
             $table->timestamp('recorded_at');
+
+            $table->string('source', 50)
+                ->default('manual');
+
+            $table->text('notes')
+                ->nullable();
 
             $table->timestamps();
 
@@ -41,11 +47,16 @@ return new class extends Migration
                 'type',
                 'recorded_at',
             ]);
+
+            $table->index([
+                'patient_id',
+                'recorded_at',
+            ]);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('health_records');
+        Schema::dropIfExists('vital_signs');
     }
 };

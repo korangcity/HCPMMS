@@ -4,32 +4,28 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\HealthRecordType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-final class HealthRecord extends Model
+final class DailyNote extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'patient_id',
-        'recorded_by',
-        'type',
-        'title',
-        'description',
-        'data',
-        'recorded_at',
+        'created_by',
+        'note_date',
+        'content',
+        'metadata',
     ];
 
     protected function casts(): array
     {
         return [
-            'type' => HealthRecordType::class,
-            'data' => 'array',
-            'recorded_at' => 'immutable_datetime',
+            'note_date' => 'immutable_date',
+            'metadata' => 'array',
         ];
     }
 
@@ -38,9 +34,9 @@ final class HealthRecord extends Model
         return $this->belongsTo(Patient::class);
     }
 
-    public function recorder(): BelongsTo
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'recorded_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function scopeForPatient(
@@ -55,6 +51,6 @@ final class HealthRecord extends Model
         mixed $from,
         mixed $to
     ): Builder {
-        return $query->whereBetween('recorded_at', [$from, $to]);
+        return $query->whereBetween('note_date', [$from, $to]);
     }
 }

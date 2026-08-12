@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -69,5 +70,25 @@ class User extends Authenticatable
     public function isSuspended(): bool
     {
         return $this->status === UserStatus::Suspended;
+    }
+
+    public function recordedVitalSigns(): HasMany
+    {
+        return $this->hasMany(VitalSign::class, 'recorded_by');
+    }
+
+    public function recordedHealthRecords(): HasMany
+    {
+        return $this->hasMany(HealthRecord::class, 'recorded_by');
+    }
+
+    public function dailyNotes(): HasMany
+    {
+        return $this->hasMany(DailyNote::class, 'created_by');
+    }
+
+    public function generatedHealthReports(): HasMany
+    {
+        return $this->hasMany(HealthReport::class, 'generated_by');
     }
 }

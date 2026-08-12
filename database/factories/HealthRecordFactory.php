@@ -21,14 +21,14 @@ final class HealthRecordFactory extends Factory
     {
         return [
             'patient_id' => Patient::factory(),
-            'created_by' => User::factory(),
+            'recorded_by' => User::factory(),
             'type' => fake()->randomElement(HealthRecordType::cases()),
             'title' => fake()->sentence(4),
             'description' => fake()->paragraph(),
-            'recorded_at' => fake()->dateTimeBetween('-1 year', 'now'),
-            'metadata' => [
+            'data' => [
                 'source' => 'manual',
             ],
+            'recorded_at' => fake()->dateTimeBetween('-30 days', 'now'),
         ];
     }
 }

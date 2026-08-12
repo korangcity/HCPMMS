@@ -104,4 +104,19 @@ final class Patient extends Model
     {
         return trim("{$this->first_name} {$this->last_name}");
     }
+
+    public function vitalSigns(): HasMany
+    {
+        return $this->hasMany(VitalSign::class);
+    }
+
+    public function dailyNotes(): HasMany
+    {
+        return $this->hasMany(DailyNote::class);
+    }
+
+    public function healthReports(): HasMany
+    {
+        return $this->hasMany(HealthReport::class);
+    }
 }

@@ -10,42 +10,42 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('health_records', function (Blueprint $table): void {
+        Schema::create('daily_notes', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignId('patient_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignId('recorded_by')
+            $table->foreignId('created_by')
                 ->nullable()
                 ->constrained('users')
                 ->nullOnDelete();
 
-            $table->string('type', 50);
+            $table->date('note_date');
 
-            $table->string('title', 255);
+            $table->text('content');
 
-            $table->text('description')
+            $table->json('metadata')
                 ->nullable();
-
-            $table->json('data')
-                ->nullable();
-
-            $table->timestamp('recorded_at');
 
             $table->timestamps();
 
+            $table->unique([
+                'patient_id',
+                'note_date',
+                'created_by',
+            ]);
+
             $table->index([
                 'patient_id',
-                'type',
-                'recorded_at',
+                'note_date',
             ]);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('health_records');
+        Schema::dropIfExists('daily_notes');
     }
 };
