@@ -120,9 +120,20 @@ final class Patient extends Model
         return $this->hasMany(HealthReport::class);
     }
 
-
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class);
+    }
     public function alerts(): HasMany
     {
         return $this->hasMany(Alert::class);
     }
+
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'doctor_id');
+    }
+
+
 }

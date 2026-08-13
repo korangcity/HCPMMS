@@ -112,7 +112,10 @@ class User extends Authenticatable
         return $this->hasRole('admin');
     }
 
-
+    public function generatedReports(): HasMany
+    {
+        return $this->hasMany(Report::class, 'generated_by');
+    }
 
 
 
