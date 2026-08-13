@@ -119,4 +119,10 @@ final class Patient extends Model
     {
         return $this->hasMany(HealthReport::class);
     }
+
+
+    public function alerts(): HasMany
+    {
+        return $this->hasMany(Alert::class);
+    }
 }

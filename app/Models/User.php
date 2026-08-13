@@ -91,4 +91,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(HealthReport::class, 'generated_by');
     }
+
+    public function alertRecipients(): HasMany
+    {
+        return $this->hasMany(AlertRecipient::class);
+    }
+
+    public function acknowledgedAlerts(): HasMany
+    {
+        return $this->hasMany(Alert::class, 'acknowledged_by');
+    }
+
+    public function resolvedAlerts(): HasMany
+    {
+        return $this->hasMany(Alert::class, 'resolved_by');
+    }
+
 }

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ChronicDiseaseSeeder::class,
             HealthMonitoringSeeder::class,
             MedicationSeeder::class,
+            AlertRuleSeeder::class,
         ]);
     }
 }
