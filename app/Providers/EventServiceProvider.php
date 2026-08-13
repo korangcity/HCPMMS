@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Events\AlertCreated;
+use App\Events\FollowUpDue;
 use App\Events\UserProvisioned;
 use App\Events\VitalSignRecorded;
 use App\Listeners\DetectAbnormalVitalSign;
 use App\Listeners\SendAlertNotification;
+use App\Listeners\SendFollowUpDueNotification;
 use App\Listeners\SendUserProvisionedNotification;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -39,6 +41,11 @@ class EventServiceProvider extends ServiceProvider
         Event::listen(
             VitalSignRecorded::class,
             DetectAbnormalVitalSign::class,
+        );
+
+        Event::listen(
+            FollowUpDue::class,
+            SendFollowUpDueNotification::class
         );
     }
 }

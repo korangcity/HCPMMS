@@ -107,4 +107,13 @@ class User extends Authenticatable
         return $this->hasMany(Alert::class, 'resolved_by');
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+
+
+
+
 }

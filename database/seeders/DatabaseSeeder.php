@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             HealthMonitoringSeeder::class,
             MedicationSeeder::class,
             AlertRuleSeeder::class,
+            AppointmentSeeder::class,
         ]);
     }
 }

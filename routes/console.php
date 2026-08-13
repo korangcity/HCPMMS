@@ -22,4 +22,13 @@ Schedule::command('reminders:process')
     ->withoutOverlapping();
 
 
+Schedule::command('follow-ups:process-due')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping();
+
+
+
+
+
+
 
