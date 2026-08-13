@@ -17,5 +17,9 @@ Schedule::command('medications:send-reminders')
     ->everyMinute()
     ->withoutOverlapping();
 
+Schedule::command('reminders:process')
+    ->everyMinute()
+    ->withoutOverlapping();
+
 
 
